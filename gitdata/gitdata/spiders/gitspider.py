@@ -11,8 +11,9 @@ class GitspiderSpider(scrapy.Spider):
         return (self.url_tmpl.format(i) for i in range(1,5))
 
     def parse(self, response):
-        item =  GitdataItem({
-            'name': response.css('div.d-inline-block.mb-1 h3 a::text').extract_first().split()[0],
-            'update_time': response.xpath('.//relative-time/@datetime').extract_first()
-            })
-        yield item
+        for repository in response.css('li.public'):
+            item =  GitdataItem({
+                'name': repository.xpath('.//a[@itemprop="name codeRepository"]/text()').extract_first().split()[0],
+                'update_time': repository.xpath('.//relative-time/@datetime').extract_first()
+                })
+            yield item

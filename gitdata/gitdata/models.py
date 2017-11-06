@@ -12,7 +12,7 @@ class Repository(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
-    updata_time = Column(DateTime)
+    update_time = Column(DateTime)
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
