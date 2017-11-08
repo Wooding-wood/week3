@@ -16,4 +16,17 @@ class GitspiderSpider(scrapy.Spider):
                 'name': repository.xpath('.//a[@itemprop="name codeRepository"]/text()').extract_first().split()[0],
                 'update_time': repository.xpath('.//relative-time/@datetime').extract_first()
                 })
-            yield item
+            url = response.urljoin('/shiyanlou/'+item['name'])
+            request = scrapy.Request(url, callback=self.parse_context)
+            request.meta['item'] = item
+            yield request
+
+    def parse_context(self, response):
+        item = response.meta['item']
+
+        context = response.xpath('.//ul[@class="numbers-summary"]')
+        item['commits'] = context.xpath('.//span[@class="num text-emphasized"]/text()')[0].re('\n\s*(\S*)\s*\n')
+        item['branches'] = context.xpath('.//span[@class="num text-emphasized"]/text()')[1].re('\n\s*(\S*)\s*\n')
+        item['releases'] = context.xpath('.//span[@class="num text-emphasized"]/text()')[2].re('\n\s*(\S*)\s*\n')
+
+        yield item

@@ -13,6 +13,9 @@ from gitdata.models import Repository, engine
 class GitdataPipeline(object):
     def process_item(self, item, spider):
         item['update_time'] = datetime.datetime.strptime(item['update_time'], '%Y-%m-%dT%H:%M:%SZ')
+        item['commits'] = int(item['commits'][0].replace(',', ''))
+        item['branches'] = int(item['branches'][0].replace(',', ''))
+        item['releases'] = int(item['releases'][0].replace(',', ''))
         self.session.add(Repository(**item))
 
         return item
